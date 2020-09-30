@@ -1,6 +1,6 @@
 # MySqlTest
 
-Simple Java project with Driver method and MySQL DAO. Need to have MySQL installed, and create a database like:
+Simple Java project with Driver method and DAO. Need to have MySQL installed, and create a database like:
 
 > create database feedback;
 > use feedback;
