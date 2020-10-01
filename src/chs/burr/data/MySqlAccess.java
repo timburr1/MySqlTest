@@ -12,23 +12,53 @@ import java.util.Date;
 
 public class MySqlAccess 
 {
-	private Connection connect = null;
-	private Statement statement = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
+	private Connection connect;
+	private Statement statement;
+	private PreparedStatement preparedStatement;
+	private ResultSet resultSet;
 
-	public void readDataBase() throws Exception 
+	public MySqlAccess() throws Exception 
 	{
-		try {
-			// This will load the MySQL driver, each DB has its own driver
-			Class.forName("com.mysql.cj.jdbc.Driver");
+		// This will load the MySQL driver, each DB has its own driver
+		Class.forName("com.mysql.cj.jdbc.Driver");
+					
+		// Setup the connection with the DB
+		connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?" + "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
+					
+		// Statements allow to issue SQL queries to the database
+		statement = connect.createStatement();
+		
+		System.out.println("Database initialized successfully.");
+	}
+	
+	public void initializeDatabase() throws Exception 
+	{
+		try 
+		{
+			final String SQL_INIT = "IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='comments') " + 
+					"	BEGIN " + 
+					"	CREATE TABLE comments (" + 
+					"        id INT NOT NULL AUTO_INCREMENT," + 
+					"        MYUSER VARCHAR(30) NOT NULL," + 
+					"        EMAIL VARCHAR(30)," + 
+					"        WEBPAGE VARCHAR(100) NOT NULL," + 
+					"        DATUM DATE NOT NULL," + 
+					"        SUMMARY VARCHAR(40) NOT NULL," + 
+					"        COMMENTS VARCHAR(400) NOT NULL," + 
+					"        PRIMARY KEY (ID)" + 
+					"    );" +  
+					"	INSERT INTO comments VALUES (default, 'Tim', 'myemail@gmail.com','https://www.westada.org/', '2020-09-30 10:33:11', 'Go CHS!', 'Go go go, you fighting Centennial High School Patriots!' );" +
+					"	END";
 			
-			// Setup the connection with the DB
-			connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?" + "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
-			
-			// Statements allow to issue SQL queries to the database
-			statement = connect.createStatement();
-			
+		} 
+		catch (Exception e) { throw e; } 
+		finally { close(); }
+	}
+	
+	public void readDatabase() throws Exception 
+	{
+		try 
+		{		
 			// Result set get the result of the SQL query
 			resultSet = statement.executeQuery("select * from feedback.comments");
 			writeResultSet(resultSet);
@@ -57,7 +87,6 @@ public class MySqlAccess
 
 			resultSet = statement.executeQuery("select * from feedback.comments");
 			writeMetaData(resultSet);
-
 		} 
 		catch (Exception e) { throw e; } 
 		finally { close(); }
