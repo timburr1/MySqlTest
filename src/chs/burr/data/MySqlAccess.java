@@ -10,61 +10,67 @@ import java.util.Date;
 
 /** based on https://www.vogella.com/tutorials/MySQLJava/article.html **/
 
-public class MySqlAccess 
-{
+public class MySqlAccess {
 	private Connection connect;
 	private Statement statement;
 	private PreparedStatement preparedStatement;
 	private ResultSet resultSet;
 
-	public MySqlAccess() throws Exception 
-	{
-		// This will load the MySQL driver, each DB has its own driver
-		Class.forName("com.mysql.cj.jdbc.Driver");
-					
-		// Setup the connection with the DB
-		connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?" + "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
-					
-		// Statements allow to issue SQL queries to the database
-		statement = connect.createStatement();
-		
-		System.out.println("Database initialized successfully.");
+	public void initializeDatabase() throws Exception {
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+			// Setup the connection with the DB
+			// IF YOU CHANGED YOUR USER PASSWORD, UPDATE THE NEXT LINE TO MATCH:
+			connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
+					+ "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
+
+			// Statements allow to issue SQL queries to the database
+			statement = connect.createStatement();
+
+			statement.execute("USE feedback;");
+
+			final String TABLE_INIT = "CREATE TABLE IF NOT EXISTS comments (" + "	id INT NOT NULL AUTO_INCREMENT,"
+					+ "	MYUSER VARCHAR(30) NOT NULL," + "	EMAIL VARCHAR(30)," + "	WEBPAGE VARCHAR(100) NOT NULL,"
+					+ "	DATUM DATE NOT NULL," + "	SUMMARY VARCHAR(40) NOT NULL," + "	COMMENTS VARCHAR(400) NOT NULL,"
+					+ "	PRIMARY KEY (ID));";
+
+			statement.execute(TABLE_INIT);
+
+			final String INSERT = "INSERT INTO comments VALUES (default, 'Tim', 'myemail@gmail.com','https://www.westada.org/', "
+					+ "'2020-09-30', 'Go CHS!', 'Go go go, you fighting Centennial High School Patriots!' );";
+
+			statement.execute(INSERT);
+
+			System.out.println("Database initialized successfully.");
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			close();
+		}
 	}
-	
-	public void initializeDatabase() throws Exception 
-	{
-		try 
-		{
-			final String SQL_INIT = "IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='comments') " + 
-					"	BEGIN " + 
-					"	CREATE TABLE comments (" + 
-					"        id INT NOT NULL AUTO_INCREMENT," + 
-					"        MYUSER VARCHAR(30) NOT NULL," + 
-					"        EMAIL VARCHAR(30)," + 
-					"        WEBPAGE VARCHAR(100) NOT NULL," + 
-					"        DATUM DATE NOT NULL," + 
-					"        SUMMARY VARCHAR(40) NOT NULL," + 
-					"        COMMENTS VARCHAR(400) NOT NULL," + 
-					"        PRIMARY KEY (ID)" + 
-					"    );" +  
-					"	INSERT INTO comments VALUES (default, 'Tim', 'myemail@gmail.com','https://www.westada.org/', '2020-09-30 10:33:11', 'Go CHS!', 'Go go go, you fighting Centennial High School Patriots!' );" +
-					"	END";
-			
-		} 
-		catch (Exception e) { throw e; } 
-		finally { close(); }
-	}
-	
-	public void readDatabase() throws Exception 
-	{
-		try 
-		{		
+
+	public void readDatabase() throws Exception {
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+			// Setup the connection with the DB
+			// IF YOU CHANGED YOUR USER PASSWORD, UPDATE THE NEXT LINE TO MATCH:
+			connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
+					+ "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
+
+			// Statements allow to issue SQL queries to the database
+			statement = connect.createStatement();
+
 			// Result set get the result of the SQL query
 			resultSet = statement.executeQuery("select * from feedback.comments");
 			writeResultSet(resultSet);
 
 			// PreparedStatements can use variables and are more efficient
-			preparedStatement = connect.prepareStatement("insert into  feedback.comments values (default, ?, ?, ?, ? , ?, ?)");
+			preparedStatement = connect
+					.prepareStatement("insert into  feedback.comments values (default, ?, ?, ?, ? , ?, ?)");
 
 			// "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
 			// Parameters start with 1
@@ -76,7 +82,8 @@ public class MySqlAccess
 			preparedStatement.setString(6, "TestComment");
 			preparedStatement.executeUpdate();
 
-			preparedStatement = connect.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from feedback.comments");
+			preparedStatement = connect
+					.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from feedback.comments");
 			resultSet = preparedStatement.executeQuery();
 			writeResultSet(resultSet);
 
@@ -87,9 +94,11 @@ public class MySqlAccess
 
 			resultSet = statement.executeQuery("select * from feedback.comments");
 			writeMetaData(resultSet);
-		} 
-		catch (Exception e) { throw e; } 
-		finally { close(); }
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			close();
+		}
 	}
 
 	private void writeMetaData(ResultSet resultSet) throws SQLException {
@@ -99,9 +108,8 @@ public class MySqlAccess
 		System.out.println("The columns in the table are: ");
 
 		System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-		
-		for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) 
-		{
+
+		for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
 			System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
 		}
 	}
@@ -127,24 +135,20 @@ public class MySqlAccess
 	}
 
 	// You need to close the resultSet
-	private void close() 
-	{
-		try 
-		{
-			if (resultSet != null) 
-			{
+	private void close() {
+		try {
+			if (resultSet != null) {
 				resultSet.close();
 			}
 
-			if (statement != null) 
-			{
+			if (statement != null) {
 				statement.close();
 			}
 
-			if (connect != null) 
-			{
+			if (connect != null) {
 				connect.close();
 			}
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 	}
 }
