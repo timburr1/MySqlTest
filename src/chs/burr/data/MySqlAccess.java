@@ -11,39 +11,31 @@ import java.util.Date;
 /** based on https://www.vogella.com/tutorials/MySQLJava/article.html **/
 
 public class MySqlAccess {
-	private Connection connect;
+	private Connection connection;
 	private Statement statement;
 	private PreparedStatement preparedStatement;
 	private ResultSet resultSet;
 
 	public void initializeDatabase() throws Exception {
 		try {
-			// This will load the MySQL driver, each DB has its own driver
+			// Get the Java Database Connector driver, we don't care about the details
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 			// Setup the connection with the DB
 			// IF YOU CHANGED YOUR USER PASSWORD, UPDATE THE NEXT LINE TO MATCH:
-			connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
 					+ "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
 
-			// Statements allow to issue SQL queries to the database
-			statement = connect.createStatement();
+			// Statements allow us to issue SQL queries to the database
+			statement = connection.createStatement();
 
 			statement.execute("USE feedback;");
 
-			final String TABLE_INIT = "CREATE TABLE IF NOT EXISTS comments (" + "	id INT NOT NULL AUTO_INCREMENT,"
-					+ "	MYUSER VARCHAR(30) NOT NULL," + "	EMAIL VARCHAR(30)," + "	WEBPAGE VARCHAR(100) NOT NULL,"
-					+ "	DATUM DATE NOT NULL," + "	SUMMARY VARCHAR(40) NOT NULL," + "	COMMENTS VARCHAR(400) NOT NULL,"
-					+ "	PRIMARY KEY (ID));";
+			final String TABLE_INIT = "create table if not exists totalUS (date DATE, cases INT, deaths int);";
 
 			statement.execute(TABLE_INIT);
 
-			final String INSERT = "INSERT INTO comments VALUES (default, 'Tim', 'myemail@gmail.com','https://www.westada.org/', "
-					+ "'2020-09-30', 'Go CHS!', 'Go go go, you fighting Centennial High School Patriots!' );";
-
-			statement.execute(INSERT);
-
-			System.out.println("Database initialized successfully.");
+			System.out.println("Table totalUS created successfully");
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -51,48 +43,48 @@ public class MySqlAccess {
 		}
 	}
 
+	// Insert a row into feedback.totalUS, make sure we can select it, and then
+	// delete it:
 	public void readDatabase() throws Exception {
 		try {
-			// This will load the MySQL driver, each DB has its own driver
+			// Get the Java Database Connector driver, we don't care about the details
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 			// Setup the connection with the DB
 			// IF YOU CHANGED YOUR USER PASSWORD, UPDATE THE NEXT LINE TO MATCH:
-			connect = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/feedback?"
 					+ "user=sqluser&password=sqluserpw&useTimezone=true&serverTimezone=UTC");
 
-			// Statements allow to issue SQL queries to the database
-			statement = connect.createStatement();
+			// Statements allow us to issue SQL queries to the database
+			statement = connection.createStatement();
 
 			// Result set get the result of the SQL query
-			resultSet = statement.executeQuery("select * from feedback.comments");
+			resultSet = statement.executeQuery("select date, cases, deaths from feedback.totalUS");
 			writeResultSet(resultSet);
 
 			// PreparedStatements can use variables and are more efficient
-			preparedStatement = connect
-					.prepareStatement("insert into  feedback.comments values (default, ?, ?, ?, ? , ?, ?)");
+			preparedStatement = connection.prepareStatement("insert into feedback.totalUS values (?, ?, ?);");
 
-			// "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
+			// date, cases, deaths from feedback.totalUS
 			// Parameters start with 1
-			preparedStatement.setString(1, "Test");
-			preparedStatement.setString(2, "TestEmail");
-			preparedStatement.setString(3, "TestWebpage");
-			preparedStatement.setDate(4, new java.sql.Date(2009, 12, 11));
-			preparedStatement.setString(5, "TestSummary");
-			preparedStatement.setString(6, "TestComment");
+			preparedStatement.setDate(1, new java.sql.Date(2020, 0, 1));
+			preparedStatement.setInt(2, 1);
+			preparedStatement.setInt(3, 0);
+
+			// Don't need any strings for this table, but this is how we would do that:
+			// preparedStatement.setString(6, "TestComment");
+
 			preparedStatement.executeUpdate();
 
-			preparedStatement = connect
-					.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from feedback.comments");
+			preparedStatement = connection.prepareStatement("SELECT date, cases, deaths from feedback.totalUS");
 			resultSet = preparedStatement.executeQuery();
 			writeResultSet(resultSet);
 
 			// Remove again the insert comment
-			preparedStatement = connect.prepareStatement("delete from feedback.comments where myuser= ? ; ");
-			preparedStatement.setString(1, "Test");
+			preparedStatement = connection.prepareStatement("delete from feedback.totalUS where date = '2020-01-21';");
 			preparedStatement.executeUpdate();
 
-			resultSet = statement.executeQuery("select * from feedback.comments");
+			resultSet = statement.executeQuery("select * from feedback.totalUS");
 			writeMetaData(resultSet);
 		} catch (Exception e) {
 			throw e;
@@ -120,17 +112,13 @@ public class MySqlAccess {
 			// It is possible to get the columns via name
 			// also possible to get the columns via the column number
 			// which starts at 1
-			// e.g. resultSet.getSTring(2);
-			String user = resultSet.getString("myuser");
-			String website = resultSet.getString("webpage");
-			String summary = resultSet.getString("summary");
-			Date date = resultSet.getDate("datum");
-			String comment = resultSet.getString("comments");
-			System.out.println("User: " + user);
-			System.out.println("Website: " + website);
-			System.out.println("summary: " + summary);
+			// e.g. resultSet.getString(2);
+			Date date = resultSet.getDate("date");
+			int cases = resultSet.getInt("cases");
+			int deaths = resultSet.getInt("deaths");
 			System.out.println("Date: " + date);
-			System.out.println("Comment: " + comment);
+			System.out.println("Cases: " + cases);
+			System.out.println("Deaths: " + deaths);
 		}
 	}
 
@@ -145,8 +133,8 @@ public class MySqlAccess {
 				statement.close();
 			}
 
-			if (connect != null) {
-				connect.close();
+			if (connection != null) {
+				connection.close();
 			}
 		} catch (Exception e) {
 		}

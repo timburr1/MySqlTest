@@ -11,12 +11,6 @@ public class Main {
     dao.initializeDatabase();
 
     dao.readDatabase();
-
-    // git clone https://github.com/nytimes/covid-19-data.git
-    // Pick one of the csv files and read it with printFileToConsole
-    // Instead of just printing the file, could you create a database to store it?
-    // Update initializeDatabase() to create your new db
-    // Parse the csv file and write the data to your database
   }
 
   static void printFileToConsole(String filename) {
