@@ -31,7 +31,7 @@ USE feedback;
 If you attempt to run this repository's [**Main.java**](https://github.com/LeSirH/MySqlTest/blob/master/src/chs/burr/Main.java) file, you will likely receive an error stating that the 'sqluser' database user does not have permissions. Enter the following lines in the MySQL CLI:
 ```sql
 GRANT USAGE ON *.* TO sqluser@localhost;
-GRANT ALL PRIVELEGES ON feedback.* TO sqluser@localhost;
+GRANT ALL PRIVILEGES ON feedback.* TO sqluser@localhost;
 ```
 
 ## Issues Configuring Java Workspace
