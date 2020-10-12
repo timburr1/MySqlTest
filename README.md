@@ -2,7 +2,7 @@
 ![](https://img.shields.io/github/repo-size/timburr1/MySqlTest)
 ![](https://img.shields.io/github/contributors/timburr1/MySqlTest)
 ![](https://img.shields.io/github/last-commit/timburr1/mysqltest)
-Simple Java project with Driver method and DAO.
+\nSimple Java project with Driver method and DAO.
 
 ## Prerequisites
 * [**MySQL**](https://www.mysql.com/downloads/)
