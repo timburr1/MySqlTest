@@ -1,5 +1,8 @@
 # MySQL DAO
-Simple Java project with Driver method and DAO.
+![](https://img.shields.io/github/repo-size/timburr1/MySqlTest)
+![](https://img.shields.io/github/contributors/timburr1/MySqlTest)
+![](https://img.shields.io/github/last-commit/timburr1/mysqltest)
+<br>Simple Java project with Driver method and DAO.
 
 ## Prerequisites
 * [**MySQL**](https://www.mysql.com/downloads/)
