@@ -205,6 +205,8 @@ public class MySqlDao {
 				Integer cases = "".equals(data[4]) ? null : Integer.valueOf(data[4]);
 				Integer deaths = "".equals(data[5]) ? null : Integer.valueOf(data[5]);
 
+				// OPTIONAL, ADA COUNTY ONLY:
+				// if("16001".equals(county))
 				insertRowIntoTotalByCounty(sqlDate, county, state, fips, cases, deaths);
 			}
 
