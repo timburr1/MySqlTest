@@ -46,6 +46,6 @@ Checkout the NYT's Covid dataset with:
 ```bash
 git clone https://github.com/nytimes/covid-19-data.git
 ```
-Modify the populateX() methods in MySqlDao to point to the appropriate csv files.
-Query your new database tables with MySQL CLI or Workbench.
-Ctrl+F "TODO" in MySqlDao.
+Modify the populateX() methods in MySqlDao to point to the appropriate csv files.  
+Query your new database tables with MySQL CLI or Workbench.  
+Ctrl+F "TODO" in MySqlDao.  
