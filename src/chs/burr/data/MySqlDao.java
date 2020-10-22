@@ -118,7 +118,7 @@ public class MySqlDao {
 			while (myReader.hasNextLine()) {
 				String[] data = myReader.nextLine().split(",");
 
-				java.util.Date utilDate = new SimpleDateFormat("yyyy-mm-dd").parse(data[0]);
+				java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[0]);
 				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
 				Integer cases = Integer.valueOf(data[1]);
@@ -155,7 +155,7 @@ public class MySqlDao {
 			while (myReader.hasNextLine()) {
 				String[] data = myReader.nextLine().split(",");
 
-				java.util.Date utilDate = new SimpleDateFormat("yyyy-mm-dd").parse(data[0]);
+				java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[0]);
 				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
 				String state = data[1];
@@ -196,7 +196,7 @@ public class MySqlDao {
 			while (myReader.hasNextLine()) {
 				String[] data = myReader.nextLine().split(",");
 
-				java.util.Date utilDate = new SimpleDateFormat("yyyy-mm-dd").parse(data[0]);
+				java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[0]);
 				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
 				String county = data[1];
@@ -206,8 +206,8 @@ public class MySqlDao {
 				Integer deaths = "".equals(data[5]) ? null : Integer.valueOf(data[5]);
 
 				// OPTIONAL, ADA COUNTY ONLY:
-				// if("16001".equals(county))
-				insertRowIntoTotalByCounty(sqlDate, county, state, fips, cases, deaths);
+				if ("16001".equals(county))
+					insertRowIntoTotalByCounty(sqlDate, county, state, fips, cases, deaths);
 			}
 
 			myReader.close();
